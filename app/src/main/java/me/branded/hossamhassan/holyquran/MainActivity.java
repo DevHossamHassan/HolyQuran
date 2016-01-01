@@ -552,7 +552,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     }
     private void chooseSoraDialog(){
         Intent i = new Intent(MainActivity.this, Dialog_chooseSora.class);
-        i.putExtra("caller", "MainActivity");
         startActivity(i);
     }
 
