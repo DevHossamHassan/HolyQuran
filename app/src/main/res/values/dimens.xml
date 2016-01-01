@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_no_margin">0dp</dimen>
+    <dimen name="activity_vertical_no_margin">0dp</dimen>
+
+
+    //login and signup layouts
+    <dimen name="parse_extras_screen_margin">30dip</dimen>
+    <dimen name="parse_extras_edittext_height">40sp</dimen>
+    <dimen name="parse_extras_half_edittext_height">20sp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+    <dimen name="item_width">30dp</dimen>
+    <dimen name="item_widthLarg">70dp</dimen>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+</resources>

@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Holy Quran</string>
+
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="btn_txt_goto">الذهاب الى :</string>
+    <string name="btn_txt_page">الصفحة</string>
+    <string name="btn_txt_chapter">الجزء</string>
+    <string name="btn_txt_sora">السورة</string>
+    <string name="saved_curren_img">currentImgID</string>
+    <string name="ok">تم</string>
+    <string name="cancel">الغاء</string>
+    <string name="choosePage">من فضلك ادخل رقم الصفحة</string>
+    <string name="chooseChapter">من فضلك ادخل رقم الجزء</string>
+    <string name="emptyFieldErrorMsg">لا يجب ان يكون هذا  الحقل فارغاً</string>
+    <string name="notValidValueErrorMsg">هذه القيمة غير صحيحة</string>
+    <string name="hintChoosePage">الصفحات من 1 الي 604</string>
+    <string name="hintChooseChapter">الأجزاء من 1 الي 30</string>
+    <string name="currentPagekey">CURRENT_PAGE_KEY</string>
+
+</resources>
