@@ -349,19 +349,19 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
-
+/*
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.mDetector.onTouchEvent(event);
         // Be sure to call the superclass implementation
         return super.onTouchEvent(event);
-    }
+    }*/
 
-   /* @Override
+    @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         this.mDetector.onTouchEvent(ev);
         return super.dispatchTouchEvent(ev);
-    }*/
+    }
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
