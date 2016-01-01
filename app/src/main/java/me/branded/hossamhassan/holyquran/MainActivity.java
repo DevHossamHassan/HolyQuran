@@ -535,9 +535,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
                 break;
             case R.id.btn_share:
                 break;
-            case R.id.btn_rotate:
-                rotateScreen();
-                break;
             default:
 
 
@@ -560,16 +557,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     }
 
 
-
-    private void rotateScreen() {
-        //saveIntToPref(mViewPager.getCurrentItem());
-        HolyQuranUtils.setInt(getString(R.string.currentPagekey), mViewPager.getCurrentItem());
-        finish();
-        Intent i = new Intent(MainActivity.this, MainActivity_land.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 }

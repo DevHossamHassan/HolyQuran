@@ -7,15 +7,11 @@ import android.util.Log;
 import me.branded.hossamhassan.holyquran.dummy.HolyQuranSora;
 
 public class Dialog_chooseSora extends AppCompatActivity implements ItemFragment.OnListFragmentInteractionListener{
-    String caller;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dialog_choose_sora);
         Log.d(HolyQuranConstants.TAG, "onCreate: Dialog_chooseSora Created");
-         caller     = getIntent().getStringExtra("caller");
-        Log.d(HolyQuranConstants.TAG, "onCreate: get Caller Activity   "+caller);
-
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
         if (findViewById(R.id.fragment_container) != null) {
@@ -43,12 +39,8 @@ public class Dialog_chooseSora extends AppCompatActivity implements ItemFragment
 
     @Override
     public void onListFragmentInteraction(HolyQuranSora.Sora item) {
-        if (caller.equals("MainActivity")) {
             MainActivity.mViewPager.setCurrentItem(item.getPageNum() - 1);
-        }else {
-            MainActivity_land.mViewPager.setCurrentItem(item.getPageNum() - 1);
 
-        }
         finish();
     }
 
