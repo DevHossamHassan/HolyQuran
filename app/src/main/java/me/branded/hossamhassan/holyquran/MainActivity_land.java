@@ -2,9 +2,15 @@ package me.branded.hossamhassan.holyquran;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -15,10 +21,20 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+
+import me.branded.hossamhassan.holyquran.Utils.Favorites;
+import me.branded.hossamhassan.holyquran.Utils.HossDBManager;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -26,18 +42,25 @@ import android.widget.ImageView;
  */
 public class MainActivity_land extends AppCompatActivity implements GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener{
-    ///////////////////////////////////////////////////////////////////////////////////////////////////
-    String x="";
     /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     * Whether or not the system UI should be auto-hidden after
+     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
-
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private static final boolean AUTO_HIDE = true;
+    /**
+     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
+     * user interaction before hiding the system UI.
+     */
+    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+    /**
+     * Some older devices needs a small delay between UI widget updates
+     * and a change of the status and navigation bar.
+     */
+    private static final int UI_ANIMATION_DELAY = 300;
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    public static ViewPager mViewPager;
     private static Integer[] mThumbIds = { R.drawable.img_1 , R.drawable.img_2 , R.drawable.img_3 ,
             R.drawable.img_4 , R.drawable.img_5 , R.drawable.img_6 , R.drawable.img_7 , R.drawable.img_8 ,
             R.drawable.img_9 , R.drawable.img_10 , R.drawable.img_11 , R.drawable.img_12 , R.drawable.img_13 ,
@@ -160,33 +183,38 @@ public class MainActivity_land extends AppCompatActivity implements GestureDetec
             R.drawable.img_594 , R.drawable.img_595 , R.drawable.img_596 , R.drawable.img_597 , R.drawable.img_598 ,
             R.drawable.img_599 , R.drawable.img_600 , R.drawable.img_601 , R.drawable.img_602 , R.drawable.img_603 ,
             R.drawable.img_604 };
-
-
+    private final Handler mHideHandler = new Handler();
     /**
-     * The {@link ViewPager} that will host the section contents.
+     * Touch listener to use for in-layout UI controls to delay hiding the
+     * system UI. This is to prevent the jarring behavior of controls going away
+     * while interacting with activity UI.
      */
-    public static ViewPager mViewPager;
-    private int currentItemForReload;
+    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            return false;
+        }
+    };
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    String x="";
+    HossDBManager dbManager;
+    List<Integer>favs;
     /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
+     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * fragments for each of the sections. We use a
+     * {@link FragmentPagerAdapter} derivative, which will keep every
+     * loaded fragment in memory. If this becomes too memory intensive, it
+     * may be best to switch to a
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private static final boolean AUTO_HIDE = true;
 
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    /**
-     * Some older devices needs a small delay between UI widget updates
-     * and a change of the status and navigation bar.
-     */
-    private static final int UI_ANIMATION_DELAY = 300;
-    private final Handler mHideHandler = new Handler();
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private int currentItemForReload;
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -206,36 +234,19 @@ public class MainActivity_land extends AppCompatActivity implements GestureDetec
         }
     };
     private View mControlsView;
+    private boolean mVisible;
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
             // Delayed display of UI elements
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.show();
-            }
-            mControlsView.setVisibility(View.VISIBLE);
+            show2();
+
         }
     };
-    private boolean mVisible;
     private final Runnable mHideRunnable = new Runnable() {
         @Override
         public void run() {
             hide();
-        }
-    };
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
         }
     };
     private GestureDetectorCompat mDetector;
@@ -247,6 +258,15 @@ public class MainActivity_land extends AppCompatActivity implements GestureDetec
         //initials shared preferences
         HolyQuranUtils.initSharedPreferences(getApplicationContext());
         /////////////////////////////////////////////
+
+
+        /////////////////////////////////////////////
+        dbManager =new HossDBManager(this,null,null,1);
+        favs=dbManager.getFavoritesAsList();
+
+        //////////////////////////////////////////////
+
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -316,27 +336,83 @@ public class MainActivity_land extends AppCompatActivity implements GestureDetec
         // Hide UI first
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
+            actionBar.setShowHideAnimationEnabled(true);
             actionBar.hide();
         }
-        mControlsView.setVisibility(View.GONE);
+        Animation hideAnim = AnimationUtils.loadAnimation(this,
+                R.anim.hide_view);
+        hideAnim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mControlsView.setVisibility(View.GONE);
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        mControlsView.startAnimation(hideAnim);
+        //mControlsView.setVisibility(View.GONE);
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
     }
+    private void show2()
+    {
+        // Delayed display of UI elements
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setShowHideAnimationEnabled(true);
+            actionBar.show();
+        }
+        Animation showAnim = AnimationUtils.loadAnimation(this,
+                R.anim.show_view);
+        showAnim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mControlsView.setVisibility(View.VISIBLE);
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        mControlsView.startAnimation(showAnim);
+        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        mVisible = true;
+        // mControlsView.setVisibility(View.VISIBLE);
+
+    }
+
+
 
     @SuppressLint("InlinedApi")
     private void show() {
         // Show the system bar
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        mVisible = true;
+
 
         // Schedule a runnable to display UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
     }
+
 
     /**
      * Schedules a call to hide() in [delay] milliseconds, canceling any
@@ -408,6 +484,196 @@ public class MainActivity_land extends AppCompatActivity implements GestureDetec
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    protected void onDestroy() {
+        //saveIntToPref(mViewPager.getCurrentItem());
+        HolyQuranUtils.setInt(getString(R.string.currentPagekey),mViewPager.getCurrentItem());
+        super.onDestroy();
+    }
+
+    /*private   void saveIntToPref(int intger)
+    {
+        sharedPref = MainActivity_land.this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getString(R.string.saved_curren_img), intger);
+        editor.commit();
+    }
+    private int getIntFromPref()
+    {
+        sharedPref = MainActivity_land.this.getPreferences(Context.MODE_PRIVATE);
+        int defaultValue =-1;
+        return sharedPref.getInt(getString(R.string.saved_curren_img), defaultValue);
+    }*/
+    @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+
+        //super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+
+        //super.onRestoreInstanceState(savedInstanceState);
+
+    }
+
+    public void buttonPressed(View view) {
+        int viewId = view.getId();
+        switch (viewId)
+        {
+            case R.id.btn_page:
+                choosePageNumDialog();
+                break;
+            case R.id.btn_sora:
+                chooseSoraDialog();
+                break;
+            case R.id.btn_chapter:
+                chooseChapterNumDialog();
+                break;
+            case R.id.btn_favorite:
+                int currentPage=mViewPager.getCurrentItem();
+                int index=favs.indexOf(currentPage);
+                if (index!=-1)
+                {
+                    favs.remove(index);
+                    dbManager.deleteFavorite(currentPage);
+                    showSnackBar(view, "تمت ازالة الصفحة من الفضلة");
+
+                }
+                else
+                {
+                    addToFavorites();
+                    favs.add(currentPage);
+                    showSnackBar(view, "تمت اضافة الصفحة الي المفضلة");
+
+                }
+
+                break;
+            case R.id.btn_note:
+                addNote();
+            case  R.id.btn_share:
+                //String s=dbManager.getFavoritesAsString();
+                //Log.d(HolyQuranConstants.TAG, "buttonPressed: " + s);
+                shareImg(mThumbIds[mViewPager.getCurrentItem()]);
+
+                break;
+            case R.id.btn_rotate:
+                rotateScreen();
+                break;
+            default:
+
+
+        }
+
+    }
+
+    public  void  addToFavorites() {
+        Favorites fav=new Favorites(mViewPager.getCurrentItem());
+            dbManager.addFavorite(fav);
+
+    }
+
+    private void choosePageNumDialog()
+    {
+        Dialog_choosePage choosePage=new Dialog_choosePage();
+        choosePage.show(this);
+    }
+
+    private void chooseSoraDialog(){
+        Intent i = new Intent(MainActivity_land.this, Dialog_chooseSora.class);
+        i.putExtra("caller", "MainActivity_land");
+        startActivity(i);
+    }
+
+    private void chooseChapterNumDialog() {
+        Dialog_chooseChapter chooseChapter = new Dialog_chooseChapter();
+        chooseChapter.show(this);
+    }
+
+    private void addNote() {
+        Dialog_addNote addNote = new Dialog_addNote();
+        addNote.show(this, mViewPager.getCurrentItem());
+    }
+
+    private void rotateScreen()
+    {
+        //saveIntToPref(mViewPager.getCurrentItem());
+        HolyQuranUtils.setInt(getString(R.string.currentPagekey),mViewPager.getCurrentItem());
+        finish();
+        Intent i=new Intent(MainActivity_land.this,MainActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //i.putExtra(getString(R.string.currentPagekey),mViewPager.getCurrentItem());
+        startActivity(i);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (newConfig.orientation==Configuration.ORIENTATION_PORTRAIT)
+        {
+            rotateScreen();
+        }
+        super.onConfigurationChanged(newConfig);
+    }
+
+    private void showSnackBar(View v)
+    {
+        Snackbar sb=Snackbar.make(v,"قريباً جداً انتظرنا في الإصدار القادم",Snackbar.LENGTH_LONG);
+        sb.show();
+
+    }
+
+    private void showSnackBar(View v,String msg)
+    {
+        Snackbar sb=Snackbar.make(v,msg,Snackbar.LENGTH_SHORT);
+        sb.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        switch (id) {
+            case R.id.action_Favorites:
+                break;
+            case R.id.action_Notes:
+                startActivity(new Intent(this,ScrollingNotesActivity.class));
+                break;
+
+        }
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    public  void shareImg(int userimage)
+    {
+
+        Bitmap b = BitmapFactory.decodeResource(getResources(), userimage);
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("image/jpeg");
+        //png
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        b.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(getContentResolver(),
+                b, "Title", null);
+        Uri imageUri =  Uri.parse(path);
+        share.putExtra(Intent.EXTRA_STREAM, imageUri);
+        startActivity(Intent.createChooser(share, "Select"));
+
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -478,91 +744,6 @@ public class MainActivity_land extends AppCompatActivity implements GestureDetec
 
             return null;
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        //saveIntToPref(mViewPager.getCurrentItem());
-        HolyQuranUtils.setInt(getString(R.string.currentPagekey),mViewPager.getCurrentItem());
-        super.onDestroy();
-    }
-    /*private   void saveIntToPref(int intger)
-    {
-        sharedPref = MainActivity_land.this.getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt(getString(R.string.saved_curren_img), intger);
-        editor.commit();
-    }
-    private int getIntFromPref()
-    {
-        sharedPref = MainActivity_land.this.getPreferences(Context.MODE_PRIVATE);
-        int defaultValue =-1;
-        return sharedPref.getInt(getString(R.string.saved_curren_img), defaultValue);
-    }*/
-    @Override
-    protected void onSaveInstanceState(final Bundle outState) {
-
-        //super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-
-        //super.onRestoreInstanceState(savedInstanceState);
-
-    }
-    public void buttonPressed(View view) {
-        int viewId = view.getId();
-        switch (viewId)
-        {
-            case R.id.btn_page:
-                choosePageNumDialog();
-                break;
-            case R.id.btn_sora:
-                chooseSoraDialog();
-                break;
-            case R.id.btn_chapter:
-                chooseChapterNumDialog();
-                break;
-            case R.id.btn_favorite:
-                break;
-            case R.id.btn_note:
-                break;
-            case  R.id.btn_share:
-                break;
-            case R.id.btn_rotate:
-                rotateScreen();
-                break;
-            default:
-
-
-        }
-
-    }
-    private void choosePageNumDialog()
-    {
-        Dialog_choosePage choosePage=new Dialog_choosePage();
-        choosePage.show(this);
-    }
-    private void chooseSoraDialog(){
-        Intent i = new Intent(MainActivity_land.this, Dialog_chooseSora.class);
-        i.putExtra("caller", "MainActivity_land");
-        startActivity(i);
-    }
-    private void chooseChapterNumDialog() {
-        Dialog_chooseChapter chooseChapter = new Dialog_chooseChapter();
-        chooseChapter.show(this);
-    }
-    private void rotateScreen()
-    {
-        //saveIntToPref(mViewPager.getCurrentItem());
-        HolyQuranUtils.setInt(getString(R.string.currentPagekey),mViewPager.getCurrentItem());
-        finish();
-        Intent i=new Intent(MainActivity_land.this,MainActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        //i.putExtra(getString(R.string.currentPagekey),mViewPager.getCurrentItem());
-        startActivity(i);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 }

@@ -1,12 +1,14 @@
 package me.branded.hossamhassan.holyquran;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.design.widget.Snackbar;
 
 /**
  * Created by HossamHassan on 12/28/2015.
  */
-public class HolyQuranUtils  {
+public class HolyQuranUtils  extends Application{
     private final static String PREFS_NAME = "holyquran.Shared";
     private static SharedPreferences sharedPreference;
     public static  void initSharedPreferences(Context context)
@@ -67,5 +69,10 @@ public class HolyQuranUtils  {
         editor.commit();
     }
 
+    public static void showSnackBar(String msg)
+    {
+        Snackbar sb=Snackbar.make(null, msg, Snackbar.LENGTH_SHORT);
+        sb.show();
+    }
 
 }
