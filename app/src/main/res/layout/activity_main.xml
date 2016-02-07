@@ -1,8 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#d3d4cb"
     android:keepScreenOn="true"
     tools:context="me.branded.hossamhassan.holyquran.MainActivity">
@@ -50,9 +50,9 @@
             android:layout_gravity="bottom|center_horizontal"
             android:background="@color/black_overlay"
             android:orientation="horizontal"
-            android:paddingTop="5dp"
-            android:paddingRight="5dp"
             android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
             tools:ignore="UselessParent">
 
             <Button
@@ -62,83 +62,86 @@
                 android:layout_weight="1"
                  />
             <Button
-                style="?metaButtonBarButtonStyle"
                 android:id="@+id/btn_rotate"
+                style="?metaButtonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="تدوير الشاشة"
                 android:onClick="buttonPressed"
+                android:text="تدوير الشاشة"
                 />
             <Button
-                style="?metaButtonBarButtonStyle"
                 android:id="@+id/btn_share"
+                style="?metaButtonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="مشاركة"
                 android:onClick="buttonPressed"
+                android:text="مشاركة"
                />
             <Button
-                style="?metaButtonBarButtonStyle"
                 android:id="@+id/btn_note"
+                style="?metaButtonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ملاحظة"
                 android:onClick="buttonPressed"
+                android:text="ملاحظة"
 
                 />
             <Button
-                style="?metaButtonBarButtonStyle"
                 android:id="@+id/btn_favorite"
+                style="?metaButtonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="مفضلة"
                 android:onClick="buttonPressed"
+                android:text="مفضلة"
                 />
 
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/fullscreen_content_controls_bottom"
+                style="?metaButtonBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="?metaButtonBarStyle"
                 android:layout_gravity="bottom|center_horizontal"
-                android:background="@color/black_overlay"
-                android:orientation="horizontal"
                 android:layout_weight="1"
+                android:background="@color/black_overlay"
                 android:gravity="end"
+                android:orientation="horizontal"
                 android:padding="5dp"
                 tools:ignore="UselessParent">
                 <Button
                     android:id="@+id/btn_chapter"
                     style="?metaButtonBarButtonStyle"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="buttonPressed"
                     android:text="@string/btn_txt_chapter"
-                    android:layout_width="wrap_content"
-                    android:onClick="buttonPressed"
                     />
                 <Button
-                    style="?metaButtonBarButtonStyle"
                     android:id="@+id/btn_sora"
+                    style="?metaButtonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="buttonPressed"
                     android:text="@string/btn_txt_sora"
-                    android:onClick="buttonPressed"
 
                     />
                 <Button
-                    style="?metaButtonBarButtonStyle"
                     android:id="@+id/btn_page"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/btn_txt_page"
-                    android:onClick="buttonPressed"
-
-                    />
-                <Button
                     style="?metaButtonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/btn_txt_goto" />
+                    android:onClick="buttonPressed"
+                    android:text="@string/btn_txt_page"
+
+                    />
+                <Button
+                    android:id="@+id/btn_add_tag"
+                    style="?metaButtonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="buttonPressed"
+                    android:text="@string/btn_txt_goto"
+                    />
 
             </LinearLayout>
         </LinearLayout>
